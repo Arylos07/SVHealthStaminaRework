@@ -11,6 +11,5 @@ namespace SVHealthStaminaRework.Config
     {
         public HealthConfig Health { get; set; } = new HealthConfig();
         public StaminaConfig Stamina { get; set; } = new StaminaConfig();
-        public bool IgnorePause { get; set; } = false;
     }
 }
