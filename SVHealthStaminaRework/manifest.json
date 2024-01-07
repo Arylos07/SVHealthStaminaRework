@@ -1,0 +1,10 @@
+{
+  "Name": "Health and Stamina Rework",
+  "Author": "Arylos",
+  "Version": "0.1",
+  "Description": "Rework to Health and Stamina to add more features",
+  "UniqueID": "Arylos.SVHealthStaminaRework",
+  "EntryDll": "SVHealthStaminaRework.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}
