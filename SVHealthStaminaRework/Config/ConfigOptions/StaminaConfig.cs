@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SVHealthStaminaRework.Config.ConfigOptions
 {
-    class StaminaConfig
+    public class StaminaConfig
     {
         public bool Enabled { get; set; } = true;
         public float StaminaPerRegenRate { get; set; } = 2f;
