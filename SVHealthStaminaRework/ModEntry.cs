@@ -56,18 +56,32 @@ namespace SVHealthStaminaRework
 
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            // integration with Generic Mod Config Menu
-            var api = Helper.ModRegistry.GetApi<IGenericModConfigMenuAPI>("Arylos.SVHealthStaminaRework");
-
-            if (api == null)
+            // integration with Generic Mod Config Menu            
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
             {
                 this.Monitor.Log("SVHealthStaminaRework: Generic Mod Config Menu not installed. No integration needed", LogLevel.Info);
                 return;
             }
 
-            api.RegisterModConfig(this.ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
-            this.HealthConfigImplementation(api);
-            this.StaminaConfigImplementation(api);
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Disable energy consumption on watering",
+                getValue: () => Config.DisableWateringStamina,
+                setValue: value => Config.DisableWateringStamina = value,
+                tooltip: () => "If enabled, watering plants with the watering can will no longer consume stamina.\n" +
+                "If disabled, normal stamina deduction takes place based on farming level."
+            );
+
+            this.Monitor.Log("SVHealthStaminaRework: Generic Mod Config Menu loaded successfully.", LogLevel.Info);
         }
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -180,7 +194,8 @@ namespace SVHealthStaminaRework
             this.DebugLogging = true;
         }
 
-        private void HealthConfigImplementation(IGenericModConfigMenuAPI api)
+        /*
+        private void HealthConfigImplementation(IGenericModConfigMenuApi api)
         {
             api.RegisterSimpleOption(this.ModManifest, "Enable Health Regeneration", "Allows your health to be modified by HealthPerRegenRate",
                 () => Config.Health.Enabled, (bool val) => Config.Health.Enabled = val);
@@ -198,7 +213,7 @@ namespace SVHealthStaminaRework
                 () => Config.Health.DontCheckConditions, (bool val) => Config.Health.DontCheckConditions = val);
         }
 
-        private void StaminaConfigImplementation(IGenericModConfigMenuAPI api)
+        private void StaminaConfigImplementation(IGenericModConfigMenuApi api)
         {
             api.RegisterSimpleOption(this.ModManifest, "Enable Stamina Regeneration", "Allows your stamina to be modified by StaminaPerRegenRate",
                 () => Config.Stamina.Enabled, (bool val) => Config.Stamina.Enabled = val);
@@ -215,5 +230,6 @@ namespace SVHealthStaminaRework
                 "therefore forces you to eat or you will run out of stamina and get over-exertion)",
                 () => Config.Stamina.DontCheckConditions, (bool val) => Config.Stamina.DontCheckConditions = val);
         }
+        */
     }
 }

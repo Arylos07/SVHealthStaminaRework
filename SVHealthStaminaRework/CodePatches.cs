@@ -23,6 +23,7 @@ namespace SVHealthStaminaRework
                 var codes = new List<CodeInstruction>(instructions);
 
                 bool found = false;
+                int index = -1;
 
                 for (int i = 0; i < codes.Count; i++)
                 {
@@ -32,18 +33,22 @@ namespace SVHealthStaminaRework
                         (codes[i + 8].opcode == OpCodes.Callvirt &&
                             (MethodInfo)codes[i + 8].operand == AccessTools.Method("StardewValley.Farmer:get_FarmingLevel"))) //detect (float)(2 * (power + 1)) - (float)who.FarmingLevel * 0.1f; here
                     {
+                        index = i;
                         found = true;
                         //SMonitor.Log("Replacing Watering Can Stamina calculation");
-                        SMonitor.Log($"code dump: {(MethodInfo)codes[i].operand}");
 
-                        codes.RemoveRange(i, 12); //remove current calculation instructions
-
+                        codes.RemoveRange(i, 15); //remove current calculation instructions
                         // insert new instructions from Calculate Stamina
-                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CalculateStamina))));
+                        codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CalculateStamina))));
                         // end
-                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
+                        //codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                         break;
                     }
+                }
+
+                for (int i = index - 5; i < index + 5; i++)
+                {
+                    SMonitor.Log($"Index {i}: {codes[i]}");
                 }
 
                 if (found) SMonitor.Log($"WateringCan.DoFunction Transpile = {found}");

@@ -39,15 +39,23 @@ namespace SVHealthStaminaRework
             return f.CurrentTool.GetType() == type;
         }
 
-        private static float CalculateStamina(Farmer f, int power)
+        private static void CalculateStamina(Farmer f, int power)
         {
+            SMonitor.Log($"Calculate Stamina (f = {f.Name}, {power}, {Config.DisableWateringStamina})");
             if (Config.DisableWateringStamina)
             {
-                return 0;
+                //explicit do nothing
+                SMonitor.Log("Nothing done");
+                return;
             }
             else
             {
-                return (float)(2 * (power + 1)) - (float)f.FarmingLevel * 0.1f;
+                //default calculation in-game
+
+                float cost = (float)(2 * (power + 1)) - (float)f.FarmingLevel * 0.1f;
+                SMonitor.Log($"(float)(2 * ({power} + 1)) - (float){f.FarmingLevel} * 0.1f = {cost}");
+
+                f.Stamina -= cost;
             }
         }
     }
