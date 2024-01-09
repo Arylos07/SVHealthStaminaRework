@@ -12,35 +12,9 @@ namespace SVHealthStaminaRework
 {
     public partial class ModEntry
     {
-        private static Dictionary<int, Tool> GetTools(Farmer f)
+        private static void CalculateStamina(Farmer f)
         {
-            Dictionary<int, Tool> tools = new();
-            for (int i = 0; i < 12; i++)
-            {
-                if (f.Items[i] is Tool)
-                    tools.Add(i, (Tool)f.Items[i]);
-            }
-            return tools;
-        }
-
-        private static bool CheckTool(Farmer f, Type type)
-        {
-            if (f.CurrentTool is null)
-                return false;
-
-            if (type == null)
-            {
-                return f.CurrentTool.GetType() == typeof(MeleeWeapon) && (f.CurrentTool as MeleeWeapon).isScythe();
-            }
-            if (type == typeof(MeleeWeapon))
-            {
-                return f.CurrentTool.GetType() == typeof(MeleeWeapon) && !(f.CurrentTool as MeleeWeapon).isScythe();
-            }
-            return f.CurrentTool.GetType() == type;
-        }
-
-        private static void CalculateStamina(Farmer f, int power)
-        {
+            int power = f.toolPower;
             SMonitor.Log($"Calculate Stamina (f = {f.Name}, {power}, {Config.DisableWateringStamina})");
             if (Config.DisableWateringStamina)
             {

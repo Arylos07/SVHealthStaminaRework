@@ -35,21 +35,27 @@ namespace SVHealthStaminaRework
                     {
                         index = i;
                         found = true;
-                        //SMonitor.Log("Replacing Watering Can Stamina calculation");
-
-                        codes.RemoveRange(i, 15); //remove current calculation instructions
+                        SMonitor.Log("Replacing Watering Can Stamina calculation");
+                        codes.RemoveRange(i-1, 16); //remove current calculation instructions
                         // insert new instructions from Calculate Stamina
-                        codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CalculateStamina))));
+
+                        //TODO: this does not take the tool power parameter from the DoFunction method; instead it gets tool power again from player.
+                        //This means that if there are any modifications to tool power, this function ignores it.
+                        //The best fix is to figure out why power is not being passed to this function and use that parameter. Other mods might modify toolPower directly
+                        // but those that modify it inline might not work.
+                        codes.Insert(i-1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CalculateStamina))));
                         // end
-                        //codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                         break;
                     }
                 }
 
-                for (int i = index - 5; i < index + 5; i++)
+                /*
+                 * Debug log to view IL stack
+                for (int i = index - 5; i < index + 15; i++)
                 {
                     SMonitor.Log($"Index {i}: {codes[i]}");
                 }
+                */
 
                 if (found) SMonitor.Log($"WateringCan.DoFunction Transpile = {found}");
                 else SMonitor.Log($"Failed Transpile: WateringCan.DoTranspile", LogLevel.Error);
