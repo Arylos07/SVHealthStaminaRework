@@ -20,7 +20,7 @@ namespace SVHealthStaminaRework
 
         public static ModEntry context;
 
-        private bool DebugLogging;
+        private bool DebugLogging = true;
 
         private int SecondsUntilHealthRegen = 0;
         private int SecondsUntilStaminaRegen = 0;
@@ -72,9 +72,89 @@ namespace SVHealthStaminaRework
                 save: () => Helper.WriteConfig(Config)
             );
 
+            //health
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Health Regen");
+
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Disable energy consumption on watering",
+                name: () => "Health Regen",
+                getValue: () => Config.Health.Enabled,
+                setValue: value => Config.Health.Enabled = value);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Health Regen Rate",
+                getValue: () => Config.Health.HealthPerRegenRate,
+                setValue: value => Config.Health.HealthPerRegenRate = value,
+                tooltip: () => "How much health to regenerate per tick.",
+                min: 1,
+                max: 10);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Health Regen Speed",
+                getValue: () => Config.Health.RegenRateInSeconds,
+                setValue: value => Config.Health.RegenRateInSeconds = value,
+                tooltip: () => "How many seconds to regenerate health.",
+                min: 5,
+                max: 120,
+                interval: 5);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Health Regen Delay",
+                getValue: () => Config.Health.SecondsUntilRegenWhenTakenDamage,
+                setValue: value => Config.Health.SecondsUntilRegenWhenTakenDamage = value,
+                tooltip: () => "How long to wait between taking damage before restoring health.",
+                min: 5,
+                max: 120,
+                interval: 5);
+
+            //stamina
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Stamina Regen");
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Stamina Regen",
+                getValue: () => Config.Stamina.Enabled,
+                setValue: value => Config.Stamina.Enabled = value);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Stamina Regen Rate",
+                getValue: () => Config.Stamina.StaminaPerRegenRate,
+                setValue: value => Config.Stamina.StaminaPerRegenRate = value,
+                tooltip: () => "How much health to regenerate per tick.",
+                min: 1,
+                max: 10);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Health Regen Speed",
+                getValue: () => Config.Stamina.RegenRateInSeconds,
+                setValue: value => Config.Stamina.RegenRateInSeconds = value,
+                tooltip: () => "How many seconds to regenerate health.",
+                min: 5,
+                max: 120,
+                interval: 5);
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Health Regen Delay",
+                getValue: () => Config.Stamina.SecondsUntilRegenWhenUsedStamina,
+                setValue: value => Config.Stamina.StaminaPerRegenRate = value,
+                tooltip: () => "How long to wait between taking damage before restoring health.",
+                min: 5,
+                max: 120,
+                interval: 5);
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Free Crop Watering",
                 getValue: () => Config.DisableWateringStamina,
                 setValue: value => Config.DisableWateringStamina = value,
                 tooltip: () => "If enabled, watering plants with the watering can will no longer consume stamina.\n" +
@@ -123,7 +203,7 @@ namespace SVHealthStaminaRework
                         if (this.DebugLogging)
                         {
                             this.Monitor.Log("Health Updated", LogLevel.Debug);
-                            this.Monitor.Log($"Last Health: {LastHealth.ToString()} ");
+                            this.Monitor.Log($"Last Health: {LastHealth.Value.ToString()} ");
                         }
                     }
 
@@ -162,7 +242,7 @@ namespace SVHealthStaminaRework
                         if (this.DebugLogging)
                         {
                             this.Monitor.Log("Stamina Updated", LogLevel.Debug);
-                            this.Monitor.Log($"Last Stamina: {LastStamina.ToString()}");
+                            this.Monitor.Log($"Last Stamina: {LastStamina.Value.ToString()}");
                         }
                     }
 

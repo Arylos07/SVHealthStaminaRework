@@ -11,6 +11,9 @@ namespace SVHealthStaminaRework.Config
     {
         public HealthConfig Health { get; set; } = new HealthConfig();
         public StaminaConfig Stamina { get; set; } = new StaminaConfig();
+        /// <summary>
+        /// If true, disables stamina consumption when watering.
+        /// </summary>
         public bool DisableWateringStamina { get; set; } = true;
     }
 }
