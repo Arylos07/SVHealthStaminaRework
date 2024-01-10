@@ -24,6 +24,7 @@ namespace SVHealthStaminaRework
 
         private int SecondsUntilHealthRegen = 0;
         private int SecondsUntilStaminaRegen = 0;
+        private float StaminaExperience = 0;
 
         private PerScreen<int> LastHealth = new PerScreen<int>();
         private PerScreen<float> LastStamina = new PerScreen<float>();
@@ -134,20 +135,20 @@ namespace SVHealthStaminaRework
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Health Regen Speed",
+                name: () => "Stamina Regen Speed",
                 getValue: () => Config.Stamina.RegenRateInSeconds,
                 setValue: value => Config.Stamina.RegenRateInSeconds = value,
-                tooltip: () => "How many seconds to regenerate health.",
+                tooltip: () => "How many seconds to regenerate stamina.",
                 min: 5,
                 max: 120,
                 interval: 5);
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Health Regen Delay",
+                name: () => "Stamina Regen Delay",
                 getValue: () => Config.Stamina.SecondsUntilRegenWhenUsedStamina,
                 setValue: value => Config.Stamina.StaminaPerRegenRate = value,
-                tooltip: () => "How long to wait between taking damage before restoring health.",
+                tooltip: () => "How long to wait after using stamina before restoring stamina.",
                 min: 5,
                 max: 120,
                 interval: 5);
@@ -188,14 +189,16 @@ namespace SVHealthStaminaRework
                     if (!Config.Health.DontCheckConditions)
                     {
                         // if player took damage
-                        if (Game1.player.health < this.LastHealth.Value)
+                        // comparing to integers to prevent floating point comparison failures
+                        // and the player only ever sees ints.
+                        if (MathF.Round(Game1.player.health) < MathF.Round(this.LastHealth.Value))
                             this.SecondsUntilHealthRegen = Config.Health.SecondsUntilRegenWhenTakenDamage;
                         //timer
                         else if (this.SecondsUntilHealthRegen > 0)
                             this.SecondsUntilHealthRegen--;
                         //regen
                         else if (this.SecondsUntilHealthRegen <= 0)
-                            if (Game1.player.health < Game1.player.maxHealth)
+                            if (MathF.Round(Game1.player.health) < MathF.Round(Game1.player.maxHealth))
                                 Game1.player.health = Math.Min(Game1.player.maxHealth, Game1.player.health + Config.Health.HealthPerRegenRate);
 
                         this.LastHealth.Value = Game1.player.health;
@@ -227,14 +230,19 @@ namespace SVHealthStaminaRework
                     if (!Config.Stamina.DontCheckConditions)
                     {
                         // if player used stamina
-                        if (Game1.player.Stamina < this.LastStamina.Value)
+                        // comparing to integers to prevent floating point comparison failures
+                        // and the player only ever sees ints.
+                        if (MathF.Round(Game1.player.Stamina) < MathF.Round(this.LastStamina.Value))
+                        {
                             this.SecondsUntilStaminaRegen = Config.Stamina.SecondsUntilRegenWhenUsedStamina;
+                            StaminaExperience += (this.LastStamina.Value - Game1.player.Stamina) * Config.Stamina.ExperienceScaling;
+                        }
                         //timer
                         else if (this.SecondsUntilStaminaRegen > 0)
                             this.SecondsUntilStaminaRegen--;
                         // regen
                         else if (this.SecondsUntilStaminaRegen <= 0)
-                            if (Game1.player.Stamina < Game1.player.MaxStamina)
+                            if (MathF.Round(Game1.player.Stamina) < MathF.Round(Game1.player.MaxStamina))
                                 Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina + Config.Stamina.StaminaPerRegenRate);
 
                         this.LastStamina.Value = Game1.player.Stamina;

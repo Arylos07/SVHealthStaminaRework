@@ -13,6 +13,7 @@ namespace SVHealthStaminaRework.Config.ConfigOptions
         public int RegenRateInSeconds { get; set; } = 30;
         public int SecondsUntilRegenWhenTakenDamage { get; set; } = 60;
         [Obsolete("This mechanic serves little purpose. Use Health.Enabled instead")]
+        //might leave this for compatibility with other mods
         public bool DontCheckConditions { get; set; } = false;
     }
 }
